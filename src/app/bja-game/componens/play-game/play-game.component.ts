@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BjaGame } from '../../classes/bja-game.class';
 import { MainScene } from '../../scenes/main.scene';
+import ScaleModes = Phaser.Scale.ScaleModes;
 
 @Component({
   selector: 'play-game',
@@ -13,6 +14,14 @@ export class PlayGameComponent implements OnInit {
   ngOnInit() {
     this.game = new BjaGame({
       scene: MainScene,
+      scale: {
+        width: 1200,
+        height: 800,
+        mode: ScaleModes.FIT,
+      },
+      physics: {
+        default: 'arcade',
+      },
     });
   }
 }
