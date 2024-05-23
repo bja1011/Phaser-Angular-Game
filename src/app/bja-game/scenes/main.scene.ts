@@ -1,9 +1,9 @@
 import { Scene } from 'phaser';
 
-const WORLD_WIDTH = 100_000;
+const WORLD_WIDTH = 10000;
 const FLOWERS_ASSETS = 2;
 const TREES_ASSETS = 1;
-const OBJECT_COUNT = Math.floor(WORLD_WIDTH/1400);
+const OBJECT_COUNT = Math.floor(WORLD_WIDTH/300);
 
 export class MainScene extends Scene {
   private bg!: Phaser.GameObjects.TileSprite;
@@ -12,6 +12,11 @@ export class MainScene extends Scene {
   private ground!: Phaser.GameObjects.TileSprite;
   private ground2!: Phaser.GameObjects.TileSprite;
   private yPos!: number;
+  private timedEvent!: Phaser.Time.TimerEvent;
+  private initialTime = 30;
+  private timeText!: Phaser.GameObjects.Text;
+  private pointsText!: Phaser.GameObjects.Text;
+  private points = 0;
 
   preload() {
     this.load.image('bg','assets/bg2.jpg');
@@ -48,7 +53,10 @@ export class MainScene extends Scene {
       flower.setScale(0.6 + (0.001*i))
       this.physics.add.collider(this.i, flower, ()=>{
         flower.disableBody();
-        this.sound.play('hit');
+        this.sound.play('hit', {
+          volume: 3
+        });
+
         this.add.tween({
           targets: [flower],
           angle: 100,
@@ -66,7 +74,7 @@ export class MainScene extends Scene {
         .setAlpha(0.8)
         .setDepth(60)
 
-      const star  = this.physics.add.sprite(lastPos+(-100*Math.random()+200), (this.cam.height - Math.random()*200) - 150, 'star').setDepth(1000)
+      const star  = this.physics.add.sprite(lastPos+(-300*Math.random()+200), (this.cam.height - Math.random()*200) - 150, 'star').setDepth(1000)
       star.setMass(0.15)
       this.physics.add.collider(this.i, star, ()=>{
         star.disableBody()
@@ -79,8 +87,10 @@ export class MainScene extends Scene {
           alpha: 0,
           duration: 1000
         })
-      });
 
+        this.points++;
+        this.pointsText.setText(`Punkty: ${this.points}`)
+      });
 
       lastFlower++;
       if(lastFlower > FLOWERS_ASSETS) {
@@ -137,8 +147,40 @@ export class MainScene extends Scene {
       repeat: -1,
       duration: 7000
     })
+
+    this.timeText = this.add.text(32, 32, 'Czas: ' +(this.initialTime), {
+      fontSize: 60,
+      shadow: {
+        color: '#173261',
+        offsetX:1,
+        offsetY: 1,
+        blur: 2,
+        fill: true
+      }
+    }).setScrollFactor(0);
+    this.timedEvent = this.time.addEvent({ delay: 1000, callback: this.onEvent, callbackScope: this, loop: true });
+    this.pointsText = this.add.text(32, 132, 'Punkty: ' +(this.points),{
+      fontSize: 60,
+      shadow: {
+        color: '#173261',
+        offsetX:1,
+        offsetY: 1,
+        blur: 2,
+        fill: true
+      }
+    }).setScrollFactor(0);
   }
 
+   onEvent ()
+  {
+    this.initialTime -= 1; // One second
+    this.timeText.setText('Czas: ' + (this.initialTime));
+    if(this.initialTime<0) {
+      this.timedEvent.destroy()
+      this.timeText.destroy()
+      this.game.pause()
+    }
+  }
   targetVelocity = 300;
   override update(time: number, delta: number) {
     // if(delta > 16) {
