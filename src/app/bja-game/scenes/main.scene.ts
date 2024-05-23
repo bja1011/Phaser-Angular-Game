@@ -138,6 +138,10 @@ export class MainScene extends Scene {
       this.jump();
     });
 
+    this.input.on('pointerdown', ()=>{
+      this.jump();
+    })
+
     this.placeObjects();
 
     const sun = this.add.sprite(this.cam.width-150, 150, 'sun').setScrollFactor(0).setDepth(50)
