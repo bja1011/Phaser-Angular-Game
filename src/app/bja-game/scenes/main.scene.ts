@@ -14,10 +14,10 @@ export class MainScene extends Scene {
   private yPos!: number;
 
   preload() {
-    this.load.image('bg','/assets/bg2.jpg');
-    this.load.image('cat','/assets/cat.png');
-    this.load.image('ground','/assets/ground.png');
-    this.load.image('sun','/assets/sun.png');
+    this.load.image('bg','assets/bg2.jpg');
+    this.load.image('cat','assets/cat.png');
+    this.load.image('ground','assets/ground.png');
+    this.load.image('sun','assets/sun.png');
 
     this.load.audio('music', [ '/assets/music.mp3' ]);
 
