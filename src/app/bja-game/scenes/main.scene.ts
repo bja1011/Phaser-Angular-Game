@@ -19,6 +19,7 @@ export class MainScene extends Scene {
     this.load.image('ground','/assets/ground.png');
     this.load.image('sun','/assets/sun.png');
 
+    this.load.audio('music', [ '/assets/music.mp3' ]);
 
     for(let i=1; i<=FLOWERS_ASSETS; i++) {
       this.load.image(`flower-${i}`,`/assets/flower-${i}.png`);
@@ -63,8 +64,6 @@ export class MainScene extends Scene {
       if(lastTree > TREES_ASSETS) {
         lastTree = 1;
       }
-
-
     }
   }
 
@@ -73,6 +72,7 @@ export class MainScene extends Scene {
   }
 
   create() {
+    this.sound.play('music');
     this.cam.setBounds(0,0,WORLD_WIDTH,this.cam.height)
     this.bg = this.add.tileSprite(0, -50, WORLD_WIDTH, this.cam.height, 'bg');
     this.bg.setScale(2.5 )
