@@ -18,14 +18,18 @@ export class MainScene extends Scene {
     this.load.image('cat','assets/cat.png');
     this.load.image('ground','assets/ground.png');
     this.load.image('sun','assets/sun.png');
+    this.load.image('star','assets/star.png');
 
-    this.load.audio('music', [ '/assets/music.mp3' ]);
+    this.load.audio('music', [ 'assets/music.mp3' ]);
+    this.load.audio('jump', [ 'assets/jump.mp3' ]);
+    this.load.audio('collect', [ 'assets/collect.mp3' ]);
+    this.load.audio('hit', [ 'assets/hit.mp3' ]);
 
     for(let i=1; i<=FLOWERS_ASSETS; i++) {
-      this.load.image(`flower-${i}`,`/assets/flower-${i}.png`);
+      this.load.image(`flower-${i}`,`assets/flower-${i}.png`);
     }
     for(let i=1; i<=TREES_ASSETS; i++) {
-      this.load.image(`tree-${i}`,`/assets/tree-${i}.png`);
+      this.load.image(`tree-${i}`,`assets/tree-${i}.png`);
     }
   }
 
@@ -43,7 +47,13 @@ export class MainScene extends Scene {
       flower.setOrigin(0.5,1)
       flower.setScale(0.6 + (0.001*i))
       this.physics.add.collider(this.i, flower, ()=>{
-        flower.destroy()
+        flower.disableBody();
+        this.sound.play('hit');
+        this.add.tween({
+          targets: [flower],
+          angle: 100,
+          duration: 600
+        })
         this.i.setVelocityX(50)
       });
       flower.setDepth(400)
@@ -55,6 +65,22 @@ export class MainScene extends Scene {
         .setScrollFactor(0.9)
         .setAlpha(0.8)
         .setDepth(60)
+
+      const star  = this.physics.add.sprite(lastPos+(-100*Math.random()+200), (this.cam.height - Math.random()*200) - 150, 'star').setDepth(1000)
+      star.setMass(0.15)
+      this.physics.add.collider(this.i, star, ()=>{
+        star.disableBody()
+        this.sound.play('collect')
+        this.add.tween({
+          targets:[star],
+          angle: 200,
+          y: star.y-200,
+          scale: 3,
+          alpha: 0,
+          duration: 1000
+        })
+      });
+
 
       lastFlower++;
       if(lastFlower > FLOWERS_ASSETS) {
@@ -126,6 +152,7 @@ export class MainScene extends Scene {
     if(Math.abs(this.i.y)<650) {
       return
     }
+    this.sound.play('jump')
     this.i.setVelocityY(-700);
   }
 }
