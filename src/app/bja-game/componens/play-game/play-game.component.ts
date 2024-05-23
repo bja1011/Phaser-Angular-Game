@@ -20,8 +20,8 @@ export class PlayGameComponent implements OnInit {
         mode: ScaleModes.FIT,
       },
       physics: {
-        default: 'arcade',
-      },
+        default: 'arcade'
+      }
     });
   }
 }
