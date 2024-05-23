@@ -15,13 +15,17 @@ export class PlayGameComponent implements OnInit {
     this.game = new BjaGame({
       scene: MainScene,
       scale: {
-        width: 1200,
+        width: 1400,
         height: 800,
         mode: ScaleModes.FIT,
       },
       physics: {
-        default: 'arcade'
-      }
+        default: 'arcade',
+        arcade: {
+          // customUpdate: true
+        }
+      },
+      parent: 'pag-canvas'
     });
   }
 }
