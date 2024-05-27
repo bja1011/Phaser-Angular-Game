@@ -13,6 +13,7 @@ export class PlayGameComponent implements OnInit {
 
   ngOnInit() {
     this.game = new BjaGame({
+      backgroundColor: 0xffffff,
       scene: MainScene,
       scale: {
         width: 1400,

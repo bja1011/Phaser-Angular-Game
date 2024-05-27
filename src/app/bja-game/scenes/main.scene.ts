@@ -1,9 +1,21 @@
 import { Scene } from 'phaser';
 
 const WORLD_WIDTH = 10000;
-const FLOWERS_ASSETS = 2;
-const TREES_ASSETS = 1;
+const FLOWERS_ASSETS = 11;
+const TREES_ASSETS = 5;
 const OBJECT_COUNT = Math.floor(WORLD_WIDTH/300);
+
+const FLOWERS_ORDER_ARRAY = new Array(FLOWERS_ASSETS).fill(0).map((el,i)=>i+1)
+shuffle(FLOWERS_ORDER_ARRAY)
+console.log(FLOWERS_ORDER_ARRAY)
+
+function shuffle<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
 
 export class MainScene extends Scene {
   private bg!: Phaser.GameObjects.TileSprite;
@@ -23,7 +35,8 @@ export class MainScene extends Scene {
     this.load.image('cat','assets/cat.png');
     this.load.image('ground','assets/ground.png');
     this.load.image('sun','assets/sun.png');
-    this.load.image('star','assets/star.png');
+    this.load.image('star-1','assets/star-1.png');
+    this.load.image('star-2','assets/star-2.png');
 
     this.load.audio('music', [ 'assets/music.mp3' ]);
     this.load.audio('jump', [ 'assets/jump.mp3' ]);
@@ -48,10 +61,14 @@ export class MainScene extends Scene {
     let lastTree = 1;
     let lastPos = this.drawX() + 600;
     for(let i=0; i<OBJECT_COUNT; i++) {
-      const flower = this.physics.add.image(lastPos,this.yPos, `flower-${lastFlower}`);
+      const flower = this.physics.add.image(lastPos,this.yPos, `flower-${FLOWERS_ORDER_ARRAY[lastFlower-1]}`);
       flower.setOrigin(0.5,1)
-      flower.setScale(0.6 + (0.001*i))
+      flower.setScale(0.9 + (0.001*i))
+      // @ts-ignore
+      flower.tex = `flower-${FLOWERS_ORDER_ARRAY[lastFlower]}`
       this.physics.add.collider(this.i, flower, ()=>{
+        // @ts-ignore
+        console.log(flower.tex)
         flower.disableBody();
         this.sound.play('hit', {
           volume: 3
@@ -74,7 +91,9 @@ export class MainScene extends Scene {
         .setAlpha(0.8)
         .setDepth(60)
 
-      const star  = this.physics.add.sprite(lastPos+(-300*Math.random()+200), (this.cam.height - Math.random()*200) - 150, 'star').setDepth(1000)
+      console.log(getRandomArbitrary(1,2))
+
+      const star  = this.physics.add.sprite(lastPos+(-300*Math.random()+200), (this.cam.height - Math.random()*200) - 180, `star-${getRandomArbitrary(1,2)}`).setDepth(1000)
       star.setMass(0.15)
       this.physics.add.collider(this.i, star, ()=>{
         star.disableBody()
@@ -113,9 +132,12 @@ export class MainScene extends Scene {
     this.bg = this.add.tileSprite(0, -50, WORLD_WIDTH, this.cam.height, 'bg');
     this.bg.setScale(2.5 )
     this.bg.setScrollFactor(0.4)
+    this.bg.setAlpha(0.6)
 
     this.ground= this.add.tileSprite(0,this.cam.height+80,WORLD_WIDTH,150, 'ground').setOrigin(0,1).setDepth(300)
-    this.ground2= this.add.tileSprite(0,this.cam.height+50,WORLD_WIDTH,150, 'ground').setOrigin(0,1).setDepth(300)
+    this.ground2= this.add.tileSprite(0,this.cam.height+50,WORLD_WIDTH,150, 'ground').setOrigin(0,0.8).setDepth(300)
+    this.ground2.setScale(1,1.6)
+
     this.physics.add.existing(this.ground);
     // @ts-ignore
     this.ground.body.immovable = true;
@@ -199,9 +221,9 @@ export class MainScene extends Scene {
       return
     }
     this.sound.play('jump')
-    this.i.setVelocityY(-700);
+    this.i.setVelocityY(-750);
   }
 }
 function getRandomArbitrary(min: number, max:number) {
-  return Math.random() * (max - min) + min;
+  return Math.round(Math.random() * (max - min) + min);
 }
