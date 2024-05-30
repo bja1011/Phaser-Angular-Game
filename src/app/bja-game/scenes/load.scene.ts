@@ -40,7 +40,11 @@ export class LoadScene extends Scene {
   create(){
     this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,'splash')
     this.input.enabled = true;
-    this.input.on('pointerdown', ()=>{
+    addEventListener('pointerdown', ()=>{
+      this.scene.start('MainScene')
+    }, {once: true})
+
+    this.input.keyboard?.on('keydown', ()=>{
       this.scene.start('MainScene')
     })
   }

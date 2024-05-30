@@ -150,8 +150,12 @@ export class MainScene extends Scene {
       this.jump();
     });
 
-    this.input.on('pointerdown', ()=>{
+    addEventListener('pointerdown', ()=>{
       this.jump();
+
+    }, )
+
+    this.input.on('pointerdown', ()=>{
     })
 
     this.placeObjects();
@@ -212,7 +216,8 @@ export class MainScene extends Scene {
 
   private jump() {
     if(this.gameOver) {
-      location.reload()
+      location.reload();
+      return
     }
 
     if(Math.abs(this.i.y)<650) {
