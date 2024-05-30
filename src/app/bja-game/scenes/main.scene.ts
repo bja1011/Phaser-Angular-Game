@@ -1,9 +1,9 @@
 import { Scene } from 'phaser';
 
-const WORLD_WIDTH = 10000;
-const FLOWERS_ASSETS = 11;
-const TREES_ASSETS = 5;
-const OBJECT_COUNT = Math.floor(WORLD_WIDTH/300);
+export const WORLD_WIDTH = 10000;
+export const FLOWERS_ASSETS = 11;
+export const TREES_ASSETS = 5;
+export const OBJECT_COUNT = Math.floor(WORLD_WIDTH/300);
 
 const FLOWERS_ORDER_ARRAY = new Array(FLOWERS_ASSETS).fill(0).map((el,i)=>i+1)
 shuffle(FLOWERS_ORDER_ARRAY)
@@ -18,6 +18,13 @@ function shuffle<T>(array: T[]): T[] {
 };
 
 export class MainScene extends Scene {
+  private gameOver = false;
+
+  constructor() {
+    super({
+      key: 'MainScene'
+    });
+  }
   private bg!: Phaser.GameObjects.TileSprite;
   private cam!: Phaser.Cameras.Scene2D.Camera;
   private i!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -31,24 +38,7 @@ export class MainScene extends Scene {
   private points = 0;
 
   preload() {
-    this.load.image('bg','assets/bg2.jpg');
-    this.load.image('cat','assets/cat.png');
-    this.load.image('ground','assets/ground.png');
-    this.load.image('sun','assets/sun.png');
-    this.load.image('star-1','assets/star-1.png');
-    this.load.image('star-2','assets/star-2.png');
 
-    this.load.audio('music', [ 'assets/music.mp3' ]);
-    this.load.audio('jump', [ 'assets/jump.mp3' ]);
-    this.load.audio('collect', [ 'assets/collect.mp3' ]);
-    this.load.audio('hit', [ 'assets/hit.mp3' ]);
-
-    for(let i=1; i<=FLOWERS_ASSETS; i++) {
-      this.load.image(`flower-${i}`,`assets/flower-${i}.png`);
-    }
-    for(let i=1; i<=TREES_ASSETS; i++) {
-      this.load.image(`tree-${i}`,`assets/tree-${i}.png`);
-    }
   }
 
   init() {
@@ -171,10 +161,10 @@ export class MainScene extends Scene {
       targets:[sun],
       angle: 360,
       repeat: -1,
-      duration: 7000
+      duration: 7000,
     })
 
-    this.timeText = this.add.text(32, 32, 'Czas: ' +(this.initialTime), {
+    this.timeText = this.add.text(32, 132, 'Czas: ' +(this.initialTime), {
       fontSize: 60,
       shadow: {
         color: '#173261',
@@ -182,10 +172,11 @@ export class MainScene extends Scene {
         offsetY: 1,
         blur: 2,
         fill: true
-      }
+      },
+      fontFamily: '"Press Start 2P"'
     }).setScrollFactor(0);
     this.timedEvent = this.time.addEvent({ delay: 1000, callback: this.onEvent, callbackScope: this, loop: true });
-    this.pointsText = this.add.text(32, 132, 'Punkty: ' +(this.points),{
+    this.pointsText = this.add.text(32, 32, 'Punkty: ' +(this.points),{
       fontSize: 60,
       shadow: {
         color: '#173261',
@@ -193,7 +184,8 @@ export class MainScene extends Scene {
         offsetY: 1,
         blur: 2,
         fill: true
-      }
+      },
+      fontFamily: '"Press Start 2P"'
     }).setScrollFactor(0);
   }
 
@@ -204,7 +196,9 @@ export class MainScene extends Scene {
     if(this.initialTime<0) {
       this.timedEvent.destroy()
       this.timeText.destroy()
-      this.game.pause()
+      this.add.image(700,400,'reload').setScrollFactor(0).setDepth(1000)
+      this.game.pause();
+      this.gameOver = true;
     }
   }
   targetVelocity = 300;
@@ -217,6 +211,10 @@ export class MainScene extends Scene {
   }
 
   private jump() {
+    if(this.gameOver) {
+      location.reload()
+    }
+
     if(Math.abs(this.i.y)<650) {
       return
     }
